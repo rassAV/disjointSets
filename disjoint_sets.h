@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <set>
 
-// Загрузка JSON файла с запрашиваемыми исходящими файлами в виде vector<int> dst_list
+// Р—Р°РіСЂСѓР·РєР° JSON С„Р°Р№Р»Р° СЃ Р·Р°РїСЂР°С€РёРІР°РµРјС‹РјРё РёСЃС…РѕРґСЏС‰РёРјРё С„Р°Р№Р»Р°РјРё РІ РІРёРґРµ vector<int> dst_list
 template <template <typename, typename...> class Vector, typename T, typename... Args>
 void load_json(const std::string& file_name, Vector<T, Args...>& dst_list) {
     std::ifstream file(file_name);
@@ -39,7 +39,7 @@ void load_json(const std::string& file_name, Vector<T, Args...>& dst_list) {
     std::cout << "Loaded " << dst_list.size() << " destination IDs from " << file_name << std::endl;
 }
 
-// Загрузка всех данных (связей от входящих файлов к исходящим) из CSV файла в виде map<int, vector<int>> src_to_dsts
+// Р—Р°РіСЂСѓР·РєР° РІСЃРµС… РґР°РЅРЅС‹С… (СЃРІСЏР·РµР№ РѕС‚ РІС…РѕРґСЏС‰РёС… С„Р°Р№Р»РѕРІ Рє РёСЃС…РѕРґСЏС‰РёРј) РёР· CSV С„Р°Р№Р»Р° РІ РІРёРґРµ map<int, vector<int>> src_to_dsts
 template <template <typename, typename...> class Map, typename Key, typename Value, typename... Args>
 void load_data(const std::string& csv_file_name, Map<Key, Value, Args...>& src_to_dsts) {
     std::ifstream file(csv_file_name);
@@ -69,7 +69,7 @@ void load_data(const std::string& csv_file_name, Map<Key, Value, Args...>& src_t
     std::cout << "Loaded " << total_connections << " connections from " << csv_file_name << std::endl;
 }
 
-// Загрузка, только запрашиваемых (в dst_list) данных (связей от входящих файлов к исходящим) из CSV файла в виде map<int, vector<int>> src_to_dsts
+// Р—Р°РіСЂСѓР·РєР°, С‚РѕР»СЊРєРѕ Р·Р°РїСЂР°С€РёРІР°РµРјС‹С… (РІ dst_list) РґР°РЅРЅС‹С… (СЃРІСЏР·РµР№ РѕС‚ РІС…РѕРґСЏС‰РёС… С„Р°Р№Р»РѕРІ Рє РёСЃС…РѕРґСЏС‰РёРј) РёР· CSV С„Р°Р№Р»Р° РІ РІРёРґРµ map<int, vector<int>> src_to_dsts
 template <
     template <typename, typename...> class Vector, typename T, typename... VecArgs,
     template <typename, typename...> class Map, typename Key, typename Value, typename... Args>
@@ -103,27 +103,27 @@ void load_data_filtered(const std::string& csv_file_name, Vector<T, VecArgs...>&
     std::cout << "Loaded " << total_connections << " connections from (filtered by json) " << csv_file_name << std::endl;
 }
 
-// Группировка непересекающихся множеств в group_to_srcs и group_to_dsts в виде map<int, vector<int>>
+// Р“СЂСѓРїРїРёСЂРѕРІРєР° РЅРµРїРµСЂРµСЃРµРєР°СЋС‰РёС…СЃСЏ РјРЅРѕР¶РµСЃС‚РІ РІ group_to_srcs Рё group_to_dsts РІ РІРёРґРµ map<int, vector<int>>
 template <template <typename, typename...> class Map, typename Key, typename Value, typename... Args>
 void group_data(const Map<Key, Value, Args...>& src_to_dsts, Map<Key, Value, Args...>& group_to_srcs, Map<Key, Value, Args...>& group_to_dsts) {
     std::map<int, int> dst_to_group;
     int next_group_id = 0;
 
-    // Проходим по всем SRC_ID и их DST_IDs
+    // РџСЂРѕС…РѕРґРёРј РїРѕ РІСЃРµРј SRC_ID Рё РёС… DST_IDs
     for (const auto& pair : src_to_dsts) {
         int src_id = pair.first;
         const auto& dst_ids = pair.second;
 
-        std::set<int> groups_to_merge; // Группы, которые нужно объединить с текущим SRC_ID и его DST_IDs
+        std::set<int> groups_to_merge; // Р“СЂСѓРїРїС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РѕР±СЉРµРґРёРЅРёС‚СЊ СЃ С‚РµРєСѓС‰РёРј SRC_ID Рё РµРіРѕ DST_IDs
 
-        // Находим все группы, которые нужно объединить с текущим SRC_ID
+        // РќР°С…РѕРґРёРј РІСЃРµ РіСЂСѓРїРїС‹, РєРѕС‚РѕСЂС‹Рµ РЅСѓР¶РЅРѕ РѕР±СЉРµРґРёРЅРёС‚СЊ СЃ С‚РµРєСѓС‰РёРј SRC_ID
         for (int dst_id : dst_ids) {
             const auto& group = dst_to_group.find(dst_id);
             if (group != dst_to_group.end()) {
                 groups_to_merge.insert(group->second);
             }
         }
-        // Если нет групп для объединения, создаем новую группу
+        // Р•СЃР»Рё РЅРµС‚ РіСЂСѓРїРї РґР»СЏ РѕР±СЉРµРґРёРЅРµРЅРёСЏ, СЃРѕР·РґР°РµРј РЅРѕРІСѓСЋ РіСЂСѓРїРїСѓ
         if (groups_to_merge.empty()) {
             group_to_srcs[next_group_id].push_back(src_id);
             for (int dst_id : dst_ids) {
@@ -133,13 +133,13 @@ void group_data(const Map<Key, Value, Args...>& src_to_dsts, Map<Key, Value, Arg
             next_group_id++;
         }
         else {
-            int new_group_id = *groups_to_merge.begin(); // Берем наименьшую группу для объединения
-            group_to_srcs[new_group_id].push_back(src_id); // Присваиваем SRC_ID и DST_IDs выбранную группу
+            int new_group_id = *groups_to_merge.begin(); // Р‘РµСЂРµРј РЅР°РёРјРµРЅСЊС€СѓСЋ РіСЂСѓРїРїСѓ РґР»СЏ РѕР±СЉРµРґРёРЅРµРЅРёСЏ
+            group_to_srcs[new_group_id].push_back(src_id); // РџСЂРёСЃРІР°РёРІР°РµРј SRC_ID Рё DST_IDs РІС‹Р±СЂР°РЅРЅСѓСЋ РіСЂСѓРїРїСѓ
             for (int dst_id : dst_ids) {
                 dst_to_group[dst_id] = new_group_id;
                 group_to_dsts[new_group_id].push_back(dst_id);
             }
-            // Объединяем остальные группы с выбранной
+            // РћР±СЉРµРґРёРЅСЏРµРј РѕСЃС‚Р°Р»СЊРЅС‹Рµ РіСЂСѓРїРїС‹ СЃ РІС‹Р±СЂР°РЅРЅРѕР№
             for (auto it = std::next(groups_to_merge.begin()); it != groups_to_merge.end(); ++it) {
                 int group_to_merge = *it;
                 for (int src : group_to_srcs[group_to_merge]) {
@@ -149,7 +149,7 @@ void group_data(const Map<Key, Value, Args...>& src_to_dsts, Map<Key, Value, Arg
                     dst_to_group[dst_id] = new_group_id;
                     group_to_dsts[new_group_id].push_back(dst_id);
                 }
-                //Удаляем старые записи о группах
+                //РЈРґР°Р»СЏРµРј СЃС‚Р°СЂС‹Рµ Р·Р°РїРёСЃРё Рѕ РіСЂСѓРїРїР°С…
                 group_to_srcs.erase(group_to_merge);
                 group_to_dsts.erase(group_to_merge);
             }
